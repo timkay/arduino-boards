@@ -76,8 +76,6 @@ def load_boards(ver_dir):
                     dp[part] = {'*name': dp[part]}
                 dp = dp[part]
             dp[parts[-1]] = setting
-    with open('dump.json', encoding='utf-8', mode='a') as fo:
-        json.dump(data, fo, indent=4)
     return data
 
 
@@ -86,10 +84,6 @@ def load_boards_txts(update=False):
     root = settings.get('dir')
     if not root:
         return
-    try:
-        os.remove('dump.json')
-    except OSError:
-        pass
     boards_list = []
     packages_dir = root + '/packages'
     for package in scan(packages_dir):
@@ -101,8 +95,7 @@ def load_boards_txts(update=False):
                     ver_dir = arch_dir + '/' + ver
                     boards_txt = ver_dir + '/' + 'boards.txt'
                     data = load_boards(ver_dir)
-                    #print(json.dumps(data, indent=4))
-                    #print(ver_dir)
+                    section_count = 0
                     newfile = ver_dir + '/boards.txt.new'
                     with open(newfile, 'w') as fo:
                         if 'menu' in data:
@@ -138,29 +131,33 @@ def load_boards_txts(update=False):
                                         node['name'] = newname
                                         section = make_build_line(newkey, node)
                                         fo.write('\n' + section)
+                                        section_count += 1
                                     
                             else:
                                 if 'name' in data[key]:
-                                    if settings.get('checked', {}).get(data[key]['name']):
-                                        section = make_build_line(key, data[key])
-                                        fo.write('\n' + section)
                                     boards_list.append([
                                         'x',
                                         data[key]['name'],
                                         ' - '.join([package, arch, ver]),
                                         boards_txt.replace(root, '...').replace('boards.txt', '...'),
                                     ])
-                if update and os.stat(newfile).st_size > 100:
-                    dest = None
-                    orig = None
-                    with open(boards_txt) as fi:
-                        dest = fi.read()
-                    with open(newfile) as fi:
-                        orig = fi.read()
-                    if dest != orig:
-                        copyfile(newfile, boards_txt)
-                        window['OUTPUT'].print('updated:', boards_txt)
-                        reminder = True
+                                    if settings.get('checked', {}).get(data[key]['name']):
+                                        section = make_build_line(key, data[key])
+                                        fo.write('\n' + section)
+                                        section_count += 1
+                        if section_count == 0:
+                            fo.write('\nNoBoard.name=(No boards selected)\n')
+                    if update: # and os.stat(newfile).st_size > 100:
+                        dest = None
+                        orig = None
+                        with open(boards_txt) as fi:
+                            dest = fi.read()
+                            with open(newfile) as fi:
+                                orig = fi.read()
+                                if dest != orig:
+                                    copyfile(newfile, boards_txt)
+                                    window['OUTPUT'].print('updated:', boards_txt)
+                                    reminder = True
         except IOError:
             pass
     boards_list.sort(key=lambda x: x[1].lower())
