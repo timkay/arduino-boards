@@ -1,3 +1,6 @@
 *~
 Old/
 settings.txt
+build/
+__pycache__/
+arduino-boards.spec
