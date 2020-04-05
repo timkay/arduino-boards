@@ -50,7 +50,8 @@ def load_boards(board_path):
                     dp[part] = {'*name': dp[part]}
                 dp = dp[part]
             if key in dp:
-                print('duplicate key', line)
+                #print('duplicate key', line)
+                pass
             else:
                 dp[key] = value
 
@@ -145,7 +146,7 @@ def load_boards_txts(root, primary=False, update=False):
                             fo.write('\n' + section)
                             section_count += 1
             if section_count == 0:
-                fo.write('\nNoBoard.name=(No boards selected)\n')
+                fo.write('\nNoBoard.name=(No boards selected)\nNoBoard.build.board=NOBOARD\n')
         if update: # and os.stat(newfile).st_size > 100:
             dest = None
             orig = None
