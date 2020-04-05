@@ -82,6 +82,7 @@ def load_boards(ver_dir):
 
 
 def load_boards_txts(update=False):
+    reminder = False
     root = settings.get('dir')
     if not root:
         return
@@ -101,7 +102,7 @@ def load_boards_txts(update=False):
                     boards_txt = ver_dir + '/' + 'boards.txt'
                     data = load_boards(ver_dir)
                     #print(json.dumps(data, indent=4))
-                    print(ver_dir)
+                    #print(ver_dir)
                     newfile = ver_dir + '/boards.txt.new'
                     with open(newfile, 'w') as fo:
                         if 'menu' in data:
@@ -150,12 +151,24 @@ def load_boards_txts(update=False):
                                         boards_txt.replace(root, '...').replace('boards.txt', '...'),
                                     ])
                 if update and os.stat(newfile).st_size > 100:
-                    copyfile(newfile, boards_txt)
-                    
+                    dest = None
+                    orig = None
+                    with open(boards_txt) as fi:
+                        dest = fi.read()
+                    with open(newfile) as fi:
+                        orig = fi.read()
+                    if dest != orig:
+                        copyfile(newfile, boards_txt)
+                        window['OUTPUT'].print('updated:', boards_txt)
+                        reminder = True
         except IOError:
             pass
     boards_list.sort(key=lambda x: x[1].lower())
     boards_list.sort(key=lambda x: x[2].lower())
+
+    if reminder:
+        window['OUTPUT'].print('RESTART THE ARDUINO IDE TO TAKE AFFECT')
+
     return boards_list
 
 
@@ -226,6 +239,7 @@ else:
         [sg.Text(app_title, key='TITLE')],
         [sg.Text('Arduino packages directory:'), sg.Input(key='DIR'), sg.Button('Refresh')],
         [sg.Button('None'), sg.Button('All'), sg.Button('Update'), sg.Button('Close')],
+        [sg.Text('Choose which boards are visible in the Arduino IDE. Double click to (un)check.')],
         [sg.Table(
             num_rows=30,
             headings=['Use', 'Board', 'Package - Arch - Ver', 'boards.txt path'],
@@ -240,7 +254,7 @@ else:
             #change_submits=True,
             bind_return_key=True,
         )],
-        [sg.Multiline(size=(97,10), font='Courier', key='OUTPUT')],
+        [sg.Multiline(size=(139,10), font=('Courier', 8), key='OUTPUT')],
     ]
     #layout.append([sg.Checkbox('Checkbox 1')])
     #layout.append([sg.Checkbox('Checkbox 2')])
@@ -300,7 +314,7 @@ else:
             save_settings()
             load_boards_txts(update=True)
             window['TABLE'].update(data)
-            window['OUTPUT'].print('clicked on %s' % row[1])
+            #window['OUTPUT'].print('clicked on %s' % row[1])
 
     window.close()
 
