@@ -32,7 +32,7 @@ def load_boards(board_path):
     if not os.path.exists(board_path):
         return data
 
-    with open(board_path, encoding='utf-8', mode='r') as fi:
+    with open(board_path, encoding='utf-8') as fi:
         while True:
             line = fi.readline()
             if not line:
@@ -99,7 +99,7 @@ def load_boards_txts(root, primary=False, update=False):
         section_count = 0
         newfile = boards_txt + '.new'
 
-        with open(newfile, 'w') as fo:
+        with open(newfile, encoding='utf-8', mode='w') as fo:
             if 'menu' in data:
                 for key in data['menu']:
                     fo.write('menu.%s=%s\n' % (key, data['menu'][key]));
@@ -253,7 +253,7 @@ else:
             #change_submits=True,
             bind_return_key=True,
         )],
-        [sg.Multiline(size=(139,10), font=('Courier', 8), key='OUTPUT')],
+        [sg.Multiline(size=(134,10), font=('Courier', 8), key='OUTPUT')],
     ]
     #layout.append([sg.Checkbox('Checkbox 1')])
     #layout.append([sg.Checkbox('Checkbox 2')])
@@ -289,7 +289,11 @@ else:
         if event in ('None', 'All'):
             for row in data:
                 row[0] = unchecked if event == 'None' else checked
-            window['OUTPUT'].print('updating table')
+                included[row[1]] = True
+                if event == 'None':
+                    del included[row[1]]
+            window['OUTPUT'].print('Including %s boards' % event)
+            load_boards_txts(root, update=True)
             window['TABLE'].update(data)
             continue
         if event == 'TABLE':
