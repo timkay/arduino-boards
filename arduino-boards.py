@@ -237,7 +237,7 @@ else:
     layout = [
         [sg.Text(app_title, key='TITLE')],
         [sg.Text('Arduino packages directory:'), sg.Input(key='DIR'), sg.Button('Refresh')],
-        [sg.Button('None'), sg.Button('All'), sg.Button('Update'), sg.Button('Close')],
+        [sg.Button('None'), sg.Button('All'), sg.Button('Close')],
         [sg.Text('Choose which boards are visible in the Arduino IDE. Double click to (un)check.')],
         [sg.Table(
             num_rows=30,
@@ -291,9 +291,6 @@ else:
                 row[0] = unchecked if event == 'None' else checked
             window['OUTPUT'].print('updating table')
             window['TABLE'].update(data)
-            continue
-        if event in ('Update'):
-            window['OUTPUT'].print('updating boards.txt')
             continue
         if event == 'TABLE':
             row = data[values['TABLE'][0]]
