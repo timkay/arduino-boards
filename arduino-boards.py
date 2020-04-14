@@ -235,7 +235,7 @@ if False:
 
 else:
     layout = [
-        [sg.Text(app_title, key='TITLE')],
+        [sg.Image('arduino.png'), sg.Text(app_title, key='TITLE')],
         [sg.Text('Arduino packages directory:'), sg.Input(key='DIR'), sg.Button('Refresh')],
         [sg.Button('None'), sg.Button('All'), sg.Button('Close')],
         [sg.Text('Choose which boards are visible in the Arduino IDE. Double click to (un)check.')],
