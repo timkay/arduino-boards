@@ -67,7 +67,7 @@ def maybe_copy_boards_txt(boards_txt):
 
 
 def find_boards_txts(root):
-    boards_txts = []
+    boards_txts = ['C:/program files (x86)/arduino/hardware/arduino/avr/boards.txt']
     packages_dir = root + '/packages'
     for package in scan(packages_dir):
         try:
@@ -203,8 +203,6 @@ def make_build_line(s, dict):
 
 def find_arduino_dir():
     cwd = os.getcwd()
-    #cwd = '/home/$USER/.arduino15/';
-    #cwd = '/Users/$USER/Library/Arduino15/';
     cwd = '/'.join(cwd.replace('\\', '/').split('/')[0:3])
     for path in ['.arduino15', 'Library/Arduino15', 'AppData/Local/Arduino15']:
         arduino_dir = cwd + '/' + path
